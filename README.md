@@ -5,15 +5,14 @@ Misc scripts for structure prediction and search
 
 install esmfold2, requares python=3.12
 ```bash
+conda create -n esmfold2 python=2.12
 pip install esm@git+https://github.com/Biohub/esm.git@main
-```
-install foleseek
-```bash
-bash install.sh
+
+#install search tools
+bash install.sh 
 ```
 
 ## run esmfold 
-
 Locally
 ``` 
 #from a fasta file with multiple sequences

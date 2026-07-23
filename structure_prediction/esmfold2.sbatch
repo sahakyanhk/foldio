@@ -4,6 +4,7 @@
 #
 # <input>:
 #   * a FASTA file (.fasta/.fa/.fas/.faa) ... each record folded as a monomer
+#   * a JSON file (.json) ................... queries (monomers/complexes)
 #   * anything else is treated as a LIST file: one MSA path per line; the first
 #     sequence of each MSA is folded using that MSA (aligned FASTA / a3m / sto).
 # Everything runs in a SINGLE job: esmfold2.py loads the model once, streams the
@@ -20,6 +21,8 @@ ext="${input##*.}"
 case "${ext,,}" in
     fasta|fa|fas|faa)
         fold_input="-ifasta $input" ;;
+    json)
+        fold_input="-json $input" ;;
     a3m|sto|stockholm|sth|stk|aln|afa|a2m)
         echo "ERROR: '$input' looks like a single MSA. For MSA prediction pass a" >&2
         echo "       LIST file (one MSA path per line), e.g.  ls *.a3m > list.txt" >&2

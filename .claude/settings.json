@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(conda env *)",
+      "Bash(module avail *)",
+      "Bash(/vf/users/saakyanh2/micromamba/envs/esmfold2/bin/python -c ' *)",
+      "Bash(/vf/users/saakyanh2/micromamba/envs/esmfold2/bin/python -m py_compile structure_prediction/esmfold2.py)",
+      "Bash(/vf/users/saakyanh2/micromamba/envs/esmfold2/bin/python structure_prediction/esmfold2.py -h)"
+    ],
+    "additionalDirectories": [
+      "/home/saakyanh2/WD/foldio/structure_prediction",
+      "/vf/users/saakyanh2/WD/foldio/structure_prediction"
+    ]
+  }
+}
