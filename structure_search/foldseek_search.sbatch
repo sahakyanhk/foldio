@@ -9,20 +9,31 @@ name=$(basename "$PDB")
 sbatch <<EOF
 #!/bin/sh
 #SBATCH --job-name=$name
-#SBATCH --cpus-per-task=48
-#SBATCH --mem=270g
-#SBATCH --partition=norm
-#SBATCH --time=12:00:00
-#SBATCH --gres=lscratch:200
+#SBATCH --cpus-per-task=96
+#SBATCH --mem=350g
+#SBATCH --partition=largemem
+#SBATCH --time=8:00:00
+#SBATCH --gres=lscratch:50
 #SBATCH --output=${name}_slurm.out
 
 
-$(dirname $(realpath $0))/bin/foldseek easy-search \
+$(dirname $(realpath $0))/../bin/foldseek easy-search \
 -e 9999 \
 --format-output query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits \
---threads 48 \
+--threads 96 \
 --max-seqs 1000 \
-$PDB /fdb/foldseek/9-427df8a/Alphafold-UniProt50 $output /lscratch/\$SLURM_JOB_ID
+$PDB /fdb/foldseek/9-427df8a/PDB ${output%.*}_pdbonly.tsv /lscratch/\$SLURM_JOB_ID
+
+
+
+$(dirname $(realpath $0))/../bin/foldseek easy-search \
+-e 9999 \
+--format-output query,target,fident,alnlen,mismatch,gapopen,qstart,qend,tstart,tend,evalue,bits \
+--threads 96 \
+--max-seqs 1000 \
+$PDB /fdb/foldseek/9-427df8a/Alphafold-UniProt50 ${output%.*}_afdb50.tsv /lscratch/\$SLURM_JOB_ID
+
+
 
 EOF
 
