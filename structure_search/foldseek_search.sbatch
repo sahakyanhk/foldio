@@ -33,6 +33,9 @@ $(dirname $(realpath $0))/../bin/foldseek easy-search \
 --max-seqs 1000 \
 $PDB /fdb/foldseek/9-427df8a/Alphafold-UniProt50 ${output%.*}_afdb50.tsv /lscratch/\$SLURM_JOB_ID
 
+cat ${output%.*}_pdbonly.tsv ${output%.*}_afdb50.tsv > $output
+
+rm ${output%.*}_pdbonly.tsv ${output%.*}_afdb50.tsv
 
 
 EOF
