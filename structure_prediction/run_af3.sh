@@ -20,18 +20,36 @@ set -eou pipefail
 # done > plddt_summary.txt
 
 
-cd "$(dirname "$0")"
+if [ $# -ne 2 ]; then
+    echo "usage: $(basename "$0") <input.fasta> <output_dir>" >&2
+    exit 1
+fi
 
-
-inputFASTA=$1
+# resolve everything to absolute paths so the script (and the sbatch jobs it
+# submits) work no matter what directory it is called from
+inputFASTA=$(readlink -f "$1")
 outdir=$2
+
+if [ ! -f "$inputFASTA" ]; then
+    echo "error: input fasta not found: $1" >&2
+    exit 1
+fi
+
+mkdir -p "$outdir"
+outdir=$(readlink -f "$outdir")
+
 name=$(basename "${inputFASTA%.*}")
 json1="${outdir}/${name}.json"
 json2="${outdir}/${name}/${name}_data.json"
 
-modelpath="/data/saakyanh2/af3_model/" #path to the dir with af3.bin.zst
 
-mkdir -p "$outdir"
+modeldir="/data/$USER/.af3_model"
+modelpath="${modeldir}/af3.bin.zst"
+
+if [ ! -f "$modelpath" ]; then
+    mkdir -p "$modeldir"
+    curl -o "$modelpath" https://storage.googleapis.com/alphafold3/af3.bin.zst
+fi
 
 # Step 1: Make MSA
 jobid1=$(sbatch --parsable <<EOF
@@ -46,7 +64,7 @@ jobid1=$(sbatch --parsable <<EOF
 ml alphafold3
 
 af3 convert --guess --output-dir "$outdir" --seeds 1,2,3,4,5 "$inputFASTA"
-af3 run --model_dir "$modelpath" --output_dir="$outdir" --json_path "$json1" --norun_inference
+af3 run --model_dir "$modeldir" --output_dir="$outdir" --json_path "$json1" --norun_inference
 EOF
 )
 
@@ -63,7 +81,7 @@ sbatch --dependency=afterok:$jobid1 <<EOF
 
 ml alphafold3
 
-af3 run --norun_data_pipeline --json_path "$json2" --model_dir "$modelpath" --output_dir="$outdir"
+af3 run --norun_data_pipeline --json_path "$json2" --model_dir "$modeldir" --output_dir="$outdir"
 
 EOF
 
